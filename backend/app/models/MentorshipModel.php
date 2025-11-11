@@ -2,5 +2,5 @@
 class   MentorshipModel extends Model
 {
     protected $table = 'mentorships';
-    protected $primary_key = 'mentorship_id ';
+    protected $primary_key = 'id ';
 }

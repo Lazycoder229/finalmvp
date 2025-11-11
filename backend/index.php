@@ -46,6 +46,7 @@ define('PREVENT_DIRECT_ACCESS', TRUE);
  * NO TRAILING SLASH!
  */
 	$system_path 			= 'scheme';
+require __DIR__ . '/vendor/autoload.php';
 
 /*
  *---------------------------------------------------------------

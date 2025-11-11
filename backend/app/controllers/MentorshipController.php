@@ -3,7 +3,7 @@ class MentorshipController extends Controller {
     public function __construct() {
         parent::__construct();
         $this->call->model("MentorshipModel");
-        
+        $this->call->model("UserModel");
         header("Access-Control-Allow-Origin: http://localhost:5173");
         header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
         header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
@@ -23,7 +23,7 @@ class MentorshipController extends Controller {
 
     // Get mentorships for a specific user
     public function user($id) {
-        $mentorships = $this->MentorshipModel->where("mentor_id = ? OR mentee_id = ?", [$id, $id]);
+        $mentorships = $this->MentorshipModel->where("mentor_id = ? OR student_id = ?", [$id, $id]);
         echo json_encode($mentorships);
     }
 
@@ -31,7 +31,7 @@ class MentorshipController extends Controller {
     public function apply() {
         $data = $_POST;
 
-        if (empty($data['mentor_id']) || empty($data['mentee_id'])) {
+        if (empty($data['mentor_id']) || empty($data['student_id'])) {
             echo json_encode(['error' => 'mentor_id and mentee_id are required']);
             return;
         }
@@ -47,12 +47,12 @@ class MentorshipController extends Controller {
     // Read JSON from request body
     $data = json_decode(file_get_contents('php://input'), true);
 
-    if (empty($data['mentor_id']) || empty($data['mentee_id'])) {
-        echo json_encode(['error' => 'mentor_id and mentee_id are required']);
+    if (empty($data['mentor_id']) || empty($data['student_id'])) {
+        echo json_encode(['error' => 'mentor_id and student_id are required']);
         return;
     }
 
-    $data['status'] = $data['status'] ?? 'Active';
+    $data['status'] = $data['status'] ?? 'Pending';
     $data['start_date'] = $data['start_date'] ?? date('Y-m-d');
     $data['end_date'] = $data['end_date'] ?? null;
 
@@ -60,36 +60,36 @@ class MentorshipController extends Controller {
 
     echo json_encode(['message' => 'Mentorship added successfully']);
 }
-    public function update($mentorship_id) {
+   public function update($id) {
     // Read JSON from request body
     $data = json_decode(file_get_contents('php://input'), true) ?? [];
-$updateData = [
-    'mentor_id'   => $data['mentor_id'] ?? null,
-    'mentee_id'   => $data['mentee_id'] ?? null,
-    'title'       => $data['title'] ?? null,
-    'description' => $data['description'] ?? null,
-    'status'      => $data['status'] ?? null,
-    'start_date'  => $data['start_date'] ?? null,
-    'end_date'    => $data['end_date'] ?? null
-];
 
-$validStatuses = ['Active', 'Pending', 'Completed', 'Reject'];
+    // Prepare update data based on add() fields
+    $updateData = [
+        'mentor_id'   => $data['mentor_id'] ?? null,
+        'student_id'  => $data['student_id'] ?? null,
+        'subject'     => $data['subject'] ?? null,
+        'status'      => $data['status'] ?? null,
+        'start_date'  => $data['start_date'] ?? null,
+        'end_date'    => $data['end_date'] ?? null
+    ];
 
-// Use isset() instead of !empty()
-if (isset($updateData['status']) && !in_array($updateData['status'], $validStatuses)) {
-    echo json_encode(['error' => 'Invalid status']);
-    return;
+    // Validate status
+    $validStatuses = ['Active', 'Pending', 'Completed', 'Reject'];
+    if (isset($updateData['status']) && !in_array($updateData['status'], $validStatuses)) {
+        echo json_encode(['error' => 'Invalid status']);
+        return;
+    }
+
+    // Remove null values
+    $updateData = array_filter($updateData, fn($v) => $v !== null);
+
+    // Update record
+    $this->MentorshipModel->update($id, $updateData);
+
+    echo json_encode(['message' => 'Mentorship updated successfully']);
 }
 
-// Remove only null values (keep empty strings if any)
-$updateData = array_filter($updateData, fn($v) => $v !== null);
-
-// Update
-$this->MentorshipModel->update($mentorship_id, $updateData);
-
-echo json_encode(['message' => 'Mentorship updated successfully']);
-
-}
 
 
     // Delete mentorship
@@ -99,8 +99,48 @@ echo json_encode(['message' => 'Mentorship updated successfully']);
     }
 
     // Get single mentorship by ID
-    public function get_mentorship($mentorship_id) {
-        $mentorship = $this->MentorshipModel->get_mentorship($mentorship_id);
+    public function get_mentorship($id) {
+        $mentorship = $this->MentorshipModel->find($id);
         echo json_encode($mentorship);
     }
+public function getMentorships()
+{
+    header('Content-Type: application/json');
+
+    try {
+        error_log("getMentorships() called");
+
+        // JOIN users to include mentee full name and profile picture
+        $mentorships = $this->MentorshipModel->db
+            ->table('mentorships AS m')
+            ->select('m.*, CONCAT(u.first_name, " ", u.last_name) AS full_name, u.profile_image')
+            ->join('users AS u', 'm.student_id = u.id')
+            ->order_by('m.created_at', 'DESC')
+            ->get_all();
+
+        echo json_encode($mentorships ?: []); // fallback to empty array
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+public function getMentees() {
+    header('Content-Type: application/json');
+
+    try {
+        $mentees = $this->UserModel->db
+            ->table('users')
+            ->where('role', 'Mentee')
+            ->where('status', 'Active')
+            ->order_by('date_joined', 'DESC')
+            ->get_all();
+
+        echo json_encode($mentees); // Return the full array
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+
 }

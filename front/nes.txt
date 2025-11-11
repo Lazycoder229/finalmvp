@@ -1,0 +1,129 @@
+// App.jsx
+import React, { useState, useEffect } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import Topbar from "./components/Topbar";
+import AdminDashboard from "./AdminDashboard";
+import ProfilePage from "./pages/ProfilePage";
+import GroupsPage from "./pages/GroupsPage";
+import GroupView from "./pages/GroupView";
+import ForumPage from "./pages/ForumPage";
+import ForumPost from "./pages/ForumPost";
+import SchedulePages from "./pages/SchedulePage";
+import AdminUserManagement from "./pages/UserManagement";
+import ApproveMentors from "./pages/ApproveMnetors";
+import Announcements from "./pages/Announcement";
+import SystemLogs from "./pages/SystemLogs";
+import NotificationsPage from "./pages/NotificationPage";
+import MentorDashboard from "./MentorDashbaord";
+import StudentDashboard from "./StudentDashboard";
+import MentorshipPage from "./pages/Mentorship";
+import MenteesPage from "./pages/Mentees";
+import StudentProgress from "./pages/StudentProgress";
+import FeedbackDashboard from "./pages/Feedback";
+import PeerConnectLanding from "./AuthPage";
+
+// make sure your file is under /pages
+
+export default function App() {
+  // Mock user data (replace with real login later)
+  const [user, setUser] = useState({
+    id: 1,
+    name: "John Doe",
+    role: "student", // change to "mentor" or "instructor" to test roles
+  });
+
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    // Mock fetching notifications (replace with backend API later)
+    const mockData = [
+      {
+        id: 1,
+        title: "Welcome!",
+        message: "You have joined PeerConnect 🎉",
+        is_read: false,
+        created_at: "2025-11-05T10:00:00Z",
+      },
+      {
+        id: 2,
+        title: "New Mentor!",
+        message: "A new mentor has joined your field",
+        is_read: true,
+        created_at: "2025-11-04T08:30:00Z",
+      },
+    ];
+    setNotifications(mockData);
+    setUnreadCount(mockData.filter((n) => !n.is_read).length);
+  }, []);
+
+  return (
+    <Router>
+      <div className="flex h-screen bg-gray-100">
+        {/* Sidebar (fixed width) */}
+        <div className="w-64 bg-white border-r">
+          <Sidebar user={user} />
+        </div>
+
+        {/* Main content */}
+        <div className="flex flex-col flex-1 overflow-hidden">
+          {/* Topbar */}
+          <Topbar
+            user={user}
+            notifications={notifications}
+            unreadCount={unreadCount}
+          />
+
+          {/* Page content */}
+          <main className="flex-1 overflow-y-auto p-6">
+            <Routes>
+              <Route path="/" element={<PeerConnectLanding />} />
+              {/* Default route redirects to dashboard */}
+
+              <Route
+                path="/dashboard"
+                element={
+                  user.role === "admin" ? (
+                    <AdminDashboard />
+                  ) : user.role === "mentor" ? (
+                    <MentorDashboard />
+                  ) : (
+                    <StudentDashboard />
+                  )
+                }
+              />
+
+              {/* Core Pages */}
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/forum" element={<ForumPage />} />
+              <Route path="/forum/:id" element={<ForumPost />} />
+
+              <Route path="/group" element={<GroupsPage />} />
+              <Route path="/group/:id" element={<GroupView />} />
+              <Route path="/schedule" element={<SchedulePages />} />
+              <Route path="/schedule/:id" element={<SchedulePages />} />
+              <Route path="/notifications" element={<NotificationsPage />} />
+              <Route path="/mentees" element={<MenteesPage />} />
+              <Route path="/progress" element={<StudentProgress />} />
+              <Route path="/feedback" element={<FeedbackDashboard />} />
+              {/* Admin Pages */}
+              <Route path="/admin-users" element={<AdminUserManagement />} />
+              <Route path="/admin-mentors" element={<ApproveMentors />} />
+              <Route path="/announcements" element={<Announcements />} />
+              <Route path="/admin-logs" element={<SystemLogs />} />
+              <Route path="/mentorship" element={<MentorshipPage />} />
+              {/* Fallback route */}
+              <Route path="*" element={<div>404 - Page Not Found</div>} />
+            </Routes>
+          </main>
+        </div>
+      </div>
+    </Router>
+  );
+}

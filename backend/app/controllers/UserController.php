@@ -1,18 +1,12 @@
 <?php
+
+
 class UserController extends Controller {
     public function __construct() {
         parent::__construct();
         $this->call->model("UserModel");
         
-        header("Access-Control-Allow-Origin: http://localhost:5173");
-        header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
-        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-        header("Content-Type: application/json");
         
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            http_response_code(200);
-            exit();
-        }
     }
 
     // Get all users
@@ -20,10 +14,46 @@ class UserController extends Controller {
         $users = $this->UserModel->all();
         echo json_encode($users);
     }
+public function total_users() {
+    $users = $this->UserModel->all();
+    $total = count($users); // get total users
+    echo json_encode(['total' => $total]);
+}
+public function total_mentor() {
+    $total_mentors = $this->db
+        ->table('users')
+        ->select_count('*', 'total')
+        ->where('role', 'Mentor') 
+        ->get();
 
+    echo json_encode($total_mentors);
+}
+   public function recent()
+    {
+        $recentUsers = $this->db
+            ->table('users')
+            ->order_by('created_at', 'DESC')
+            ->limit(3)
+            ->get_all(); // returns array
+
+        echo json_encode($recentUsers);
+    }
+public function distribution()
+    {
+        $distribution = $this->db
+            ->table('users')
+            ->select('role')
+            ->select_count('*', 'count')
+            ->group_by('role')
+            ->get_all(); // returns array of role + count
+
+      
+
+        echo json_encode($distribution);
+    }
     // Get single user by ID
     public function get_user($id) {
-        $user = $this->UserModel->get_user($id);
+        $user = $this->UserModel->find($id);
         echo json_encode($user);
     }
 
@@ -143,6 +173,7 @@ class UserController extends Controller {
     // Verify password (passwords are stored in password_hash)
     if (!empty($user['password_hash']) && password_verify($password, $user['password_hash'])) {
         // Get user role (default to 'Mentee' if not set)
+    
         $role = $user['role'] ?? 'Mentee';
         
         // remove sensitive data
@@ -151,10 +182,13 @@ class UserController extends Controller {
         // Optionally, generate a simple session token (replace with JWT in production)
         $token = base64_encode($user['id'] . ':' . time());
 
+
+
         echo json_encode([
             'message' => 'Login successful', 
             'user' => $user, 
             'role' => $role,
+            'id' => $user['id'],
             'token' => $token
         ]);
         return;
@@ -163,6 +197,109 @@ class UserController extends Controller {
     http_response_code(401);
     echo json_encode(['error' => 'Invalid credentials']);
 }
-    // Record a visit to a user's profile (increments visits and updates last_visit)
-   
+  // Get all mentors with pending status
+public function getMentors() {
+    header('Content-Type: application/json');
+
+    try {
+        // Log to check if function runs
+        error_log("getMentors() called");
+$mentors = $this->UserModel->db
+    ->table('users')
+    ->where('role', 'Mentor')
+    ->where('status', 'Pending')
+    ->order_by('date_joined', 'DESC')
+    ->get_all();
+
+
+
+        foreach ($mentors as &$mentor) {
+            $mentor['subjects'] = explode(',', $mentor['skills'] ?? '');
+        }
+
+        echo json_encode($mentors);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+public function get_Mentors() {
+    header('Content-Type: application/json');
+
+    try {
+        // Log to check if function runs
+        error_log("getMentors() called");
+$mentors = $this->UserModel->db
+    ->table('users')
+    ->where('role', 'Mentor')
+    ->where('status', 'Active')
+    ->order_by('date_joined', 'DESC')
+    ->get_all();
+
+
+
+        foreach ($mentors as &$mentor) {
+            $mentor['subjects'] = explode(',', $mentor['skills'] ?? '');
+        }
+
+        echo json_encode($mentors);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+
+public function getMentees() {
+    header('Content-Type: application/json');
+
+    try {
+        // Log to check if function runs
+        error_log("getMentors() called");
+$mentees = $this->UserModel->db
+    ->table('users')
+    ->where('role', 'Mentee')
+    ->where('status', 'Active')
+    ->order_by('date_joined', 'DESC')
+    ->get_all();
+
+  $total_mentees = count($mentees);
+
+
+        echo json_encode($total_mentees);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+}
+// Approve mentor (set status to Active)
+public function approveMentor($id) {
+    header('Content-Type: application/json');
+
+    $user = $this->UserModel->find($id);
+    if (!$user) {
+        echo json_encode(['error' => 'Mentor not found']);
+        return;
+    }
+
+    // Update mentor status to Active
+    $this->UserModel->update($id, ['status' => 'Active']);
+    echo json_encode(['message' => 'Mentor approved successfully']);
+}
+
+
+// Reject mentor (set status to Rejected)
+public function rejectMentor($id) {
+    header('Content-Type: application/json');
+
+    $user = $this->UserModel->find($id);
+    if (!$user) {
+        echo json_encode(['error' => 'Mentor not found']);
+        return;
+    }
+
+    // Update mentor status to Rejected
+    $this->UserModel->update($id, ['status' => 'Rejected']);
+    echo json_encode(['message' => 'Mentor rejected successfully']);
+}
+
 }

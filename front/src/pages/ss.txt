@@ -1,0 +1,30 @@
+Add Quick Action in the admin DashBoard.
+Add Kpi for total faculty,employee or staff
+
+Add this in the User management(Admin Portal)
+1.Manage User
+2. Create Role /Permission
+3.Acces Control RBAC
+4.lOGIN hISTORY
+5. Activity Logs
+6. Two factor Authentication Setup
+7. Data Backup & Restore
+6. Account Lock /Unlock
+Add this in department managament
+1.Department management
+2. Course management3.Curriculum Setup
+4. Programs Offerring Major/MInor
+5.Pre-requisite Setup6. Academic and semester management
+Add this to Student management
+1. Student List
+2. Admission form
+3.  Enrollment RECORDS
+4. coURSE tRANSFER/SHIFTING
+5. sTUDENT PROFILE
+6. Academic hISTORY
+7. ID generation and barcode
+8. Scholarship Assignment
+9. Batch management
+10. Student clerance signing processing
+11. Student Document Archive
+//764331570261-rgi40o6am0vres1ebie8frpd8nddvc0l.apps.googleusercontent.com
