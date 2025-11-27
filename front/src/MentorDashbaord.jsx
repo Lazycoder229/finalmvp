@@ -9,6 +9,7 @@ import {
   X,
   ArrowRight,
 } from "lucide-react";
+import ChatbotWidget from "./components/ChatbotWidget";
 
 // --- HELPER COMPONENTS ---
 const StarRating = ({ rating }) => (
@@ -283,7 +284,7 @@ export default function MentorDashboard() {
             </Card>
 
             {/* Pending Mentorship Requests */}
-            {pendingRequests.length > 0 && (
+            {/* {pendingRequests.length > 0 && (
               <Card title="Pending Mentorship Requests" id="mentees-pending">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -312,7 +313,7 @@ export default function MentorDashboard() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button
-                            onClick={() => handleRequest(request.id, "accept")}
+                            onClick={() => handleRequest(request.id, "approve")}
                             className="text-white bg-green-500 hover:bg-green-600 font-semibold py-1 px-3 rounded-lg text-xs mr-2 transition duration-150 shadow-md"
                           >
                             Accept
@@ -329,7 +330,7 @@ export default function MentorDashboard() {
                   </tbody>
                 </table>
               </Card>
-            )}
+            )} */}
 
             {/* My Mentees */}
             <Card
@@ -352,9 +353,9 @@ export default function MentorDashboard() {
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Email
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Action
-                      </th>
+                      </th> */}
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -372,17 +373,17 @@ export default function MentorDashboard() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                           {mentee.email}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        {/* <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <a
                             href={`#mentee-view-${mentee.id}`}
                             className="text-white bg-indigo-500 hover:bg-indigo-600 font-semibold py-1.5 px-3 rounded-xl text-sm transition duration-150 shadow-md"
                           >
                             View Report
                           </a>
-                        </td>
+                        </td> */}
                       </tr>
                     ))}
                   </tbody>
@@ -452,6 +453,8 @@ export default function MentorDashboard() {
           <span>{toast.message}</span>
         </div>
       )}
+
+      <ChatbotWidget />
     </div>
   );
 }

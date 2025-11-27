@@ -110,13 +110,13 @@ public function getMentorships()
     try {
         error_log("getMentorships() called");
 
-        // JOIN users to include mentee full name and profile picture
         $mentorships = $this->MentorshipModel->db
-            ->table('mentorships AS m')
-            ->select('m.*, CONCAT(u.first_name, " ", u.last_name) AS full_name, u.profile_image')
-            ->join('users AS u', 'm.student_id = u.id')
-            ->order_by('m.created_at', 'DESC')
-            ->get_all();
+    ->table('mentorships AS m')
+    ->select('m.*, CONCAT(u.first_name, " ", u.last_name) AS full_name, u.profile_image, u.email')
+    ->join('users AS u', 'm.student_id = u.id')
+    ->order_by('m.created_at', 'DESC')
+    ->get_all();
+
 
         echo json_encode($mentorships ?: []); // fallback to empty array
     } catch (Exception $e) {

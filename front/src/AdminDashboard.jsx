@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Users, GraduationCap, BookOpen, MessageCircle } from "lucide-react";
 import axios from "axios";
 import Footer from "./components/Footer";
+import ChatbotWidget from "./components/ChatbotWidget";
 
 export default function AdminDashboard() {
   const [totalUser, setTotalUsers] = useState(0);
@@ -262,6 +263,7 @@ export default function AdminDashboard() {
           }}
         />
       </div>
+      <ChatbotWidget />
     </div>
   );
 }

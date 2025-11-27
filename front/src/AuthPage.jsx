@@ -19,6 +19,8 @@ import LoginPage from "./LoginPage";
 import ForgotPasword from "./ForgotPasword";
 import RegisterPage from "./RegisterPage";
 
+import ChatbotWidget from "./components/ChatbotWidget";
+
 export default function PeerConnectLanding({ onLoginSuccess }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [showLogin, setShowLogin] = useState(false); // NEW: for modal visibility
@@ -181,16 +183,6 @@ export default function PeerConnectLanding({ onLoginSuccess }) {
           setShowLogin={setShowLogin}
         />
       )}
-
-      {/* ===== FLOATING BACK TO TOP BUTTON ===== */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-        className="fixed bottom-8 right-8 bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 transition-all hover:scale-110"
-        style={{ zIndex: 1000 }}
-        title="Back to top"
-      >
-        <ArrowRight className="w-5 h-5 rotate-[-90deg]" />
-      </button>
 
       {/* ===== HERO SECTION ===== */}
       <section
@@ -437,6 +429,7 @@ export default function PeerConnectLanding({ onLoginSuccess }) {
           </p>
         </div>
       </footer>
+      <ChatbotWidget />
     </div>
   );
 }

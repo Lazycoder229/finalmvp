@@ -57,17 +57,27 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 |   Example: $database['another_example'] = array('key' => 'value')
 */
 
-$database['main'] = array(
+// $database['main'] = array(
+//     'driver'	=> 'mysql',
+//     'hostname'	=> 'localhost',
+//     'port'		=> '3306',
+//     'username'	=> 'root',
+//     'password'	=> '',
+//     'database'	=> 'peerconnectDB',
+//     'charset'	=> 'utf8mb4',
+//     'dbprefix'	=> '',
+//     'path'      => ''
+// );
+ $database['main'] = array(
     'driver'	=> 'mysql',
-    'hostname'	=> 'localhost',
+    'hostname'	=> 'sql12.freesqldatabase.com',
     'port'		=> '3306',
-    'username'	=> 'root',
-    'password'	=> '',
-    'database'	=> 'peerconnectDB',
+    'username'	=> 'sql12809642',
+    'password'	=> '9GL2yy2hWe',
+    'database'	=> 'sql12809642',
     'charset'	=> 'utf8mb4',
     'dbprefix'	=> '',
     'path'      => ''
-);
-
+); 
 
 ?>

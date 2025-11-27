@@ -103,7 +103,6 @@ $autoload['helpers'] = array();
 |	$autoload['models'] = array('model1_model', 'model2_model')
 */
 $autoload['models'] = array();
-$autoload['libraries'] = ['database', 'GoogleClient', 'GoogleAuthController'];
 
 
 /*
